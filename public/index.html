@@ -42,6 +42,8 @@
             });
         }
 
+        function deleteSong(index) { socket.emit("deleteSong", index); } function moveUp(index) { if (index > 0) { socket.emit("moveSong", { from: index, to: index - 1 }); } } function moveDown(index) { if (index < playlist.length - 1) { socket.emit("moveSong", { from: index, to: index + 1 }); } } function toggleMode() { socket.emit("toggleMode"); }
+
         function searchSong() {
             const query = document.getElementById("searchInput").value;
             fetch(`https://itunes.apple.com/search?term=${query}&media=music`)
