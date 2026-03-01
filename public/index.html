@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Listen Together</title>
+</head>
+<body>
+    <h2>🎵 Listen Together</h2>
+
+    <input type="text" id="searchInput" placeholder="Search song..." />
+    <button onclick="searchSong()">Search</button>
+
+    <ul id="searchResults"></ul>
+
+    <h3>Playlist</h3>
+    <button onclick="toggleMode()">Toggle Order/Random</button>
+    <ul id="playlist"></ul>
+
+    <audio id="audio" controls></audio>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const audio = document.getElementById("audio");
+        let playlist = [];
+        let currentIndex = 0;
+
+        function renderPlaylist() {
+            const ul = document.getElementById("playlist");
+            ul.innerHTML = "";
+            playlist.forEach((song, index) => {
+                const li = document.createElement("li");
+                li.innerHTML = `
+                    ${song.trackName} - ${song.artistName}
+                    <button onclick="deleteSong(${index})">❌</button>
+                    <button onclick="moveUp(${index})">⬆</button>
+                    <button onclick="moveDown(${index})">⬇</button>
+                `;
+                ul.appendChild(li);
+            });
+        }
+
+        function deleteSong(index) {
+            socket.emit("deleteSong", index);
+        }
+
+        function moveUp(index) {
+            if (index > 0) {
+                socket.emit("moveSong", { from: index, to: index - 1 });
+            }
+        }
+
+        function moveDown(index) {
+            if (index < playlist.length - 1) {
+                socket.emit("moveSong", { from: index, to: index + 1 });
+            }
+        }
+
+        function toggleMode() {
+            socket.emit("toggleMode");
+        }
+
+        function searchSong() {
+            const query = document.getElementById("searchInput").value;
+            fetch(`https://itunes.apple.com/search?term=${query}&media=music`)
+                .then(res => res.json())
+                .then(data => {
+                    const results = document.getElementById("searchResults");
+                    results.innerHTML = "";
+                    data.results.slice(0, 5).forEach(song => {
+                        const li = document.createElement("li");
+                        li.innerHTML = `
+                            ${song.trackName} - ${song.artistName}
+                            <button onclick='addSong(${JSON.stringify(song)})'>Add</button>
+                        `;
+                        results.appendChild(li);
+                    });
+                });
+        }
+
+        function addSong(song) {
+            socket.emit("addSong", song);
+        }
+
+        socket.on("updatePlaylist", (updated) => {
+            playlist = updated;
+            renderPlaylist();
+        });
+
+        socket.on("syncState", (state) => {
+            playlist = state.playlist;
+            currentIndex = state.currentIndex;
+            renderPlaylist();
+        });
+
+        socket.on("play", (time) => {
+            audio.currentTime = time;
+            audio.play();
+        });
+
+        socket.on("pause", (time) => {
+            audio.currentTime = time;
+            audio.pause();
+        });
+
+        socket.on("next", (index) => {
+            currentIndex = index;
+            playCurrent();
+        });
+
+        audio.addEventListener("play", () => {
+            socket.emit("play", audio.currentTime);
+        });
+
+        audio.addEventListener("pause", () => {
+            socket.emit("pause", audio.currentTime);
+        });
+
+        function playCurrent() {
+            if (playlist.length === 0) return;
+            audio.src = playlist[currentIndex].previewUrl;
+            audio.play();
+        }
+    </script>
+</body>
+</html>
