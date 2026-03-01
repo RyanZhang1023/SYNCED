@@ -16,6 +16,8 @@
     <ul id="playlist"></ul>
 
     <audio id="audio" controls></audio>
+    <button onclick="playSong()">Play</button>
+    <button onclick="pauseSong()">Pause</button>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
@@ -78,12 +80,19 @@
         }
 
         function addSong(song) {
-            socket.emit("addSong", song);
+            if (song.previewUrl) {
+                socket.emit("addSong", song);
+            }
         }
 
         socket.on("updatePlaylist", (updated) => {
             playlist = updated;
             renderPlaylist();
+
+            if (playlist.length > 0 && !audio.src) {
+                currentIndex = 0;
+                loadCurrentSong();
+            }
         });
 
         socket.on("syncState", (state) => {
@@ -107,19 +116,25 @@
             playCurrent();
         });
 
-        audio.addEventListener("play", () => {
+        function playSong() {
             socket.emit("play", audio.currentTime);
-        });
+        }
 
-        audio.addEventListener("pause", () => {
+        function pauseSong() {
             socket.emit("pause", audio.currentTime);
-        });
+        }
 
         function playCurrent() {
             if (playlist.length === 0) return;
             audio.src = playlist[currentIndex].previewUrl;
             audio.play();
         }
+
+        function loadCurrentSong() {
+            if (playlist.length === 0) return;
+            audio.src = playlist[currentIndex].previewUrl;
+        }
+
     </script>
 </body>
 </html>
