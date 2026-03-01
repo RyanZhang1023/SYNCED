@@ -113,7 +113,8 @@
 
         socket.on("next", (index) => {
             currentIndex = index;
-            playCurrent();
+            loadCurrentSong();
+            audio.play();
         });
 
         function playSong() {

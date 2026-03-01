@@ -70,9 +70,14 @@ io.on("connection", (socket) => {
     });
 
     socket.on("next", () => {
+        if (playlist.length === 0) return;
+
         if (mode === "ordered") {
             currentIndex = (currentIndex + 1) % playlist.length;
+        } else {
+            currentIndex = Math.floor(Math.random() * playlist.length);
         }
+
         io.emit("next", currentIndex);
     });
 
