@@ -26,6 +26,7 @@
         let playlist = [];
         let currentIndex = 0;
 
+        // Renders playlist UI
         function renderPlaylist() {
             const ul = document.getElementById("playlist");
             ul.innerHTML = "";
@@ -41,58 +42,37 @@
             });
         }
 
-        function deleteSong(index) {
-            socket.emit("deleteSong", index);
-        }
-
-        function moveUp(index) {
-            if (index > 0) {
-                socket.emit("moveSong", { from: index, to: index - 1 });
+        // Load current song into audio element
+        function loadCurrentSong() {
+            if (playlist.length === 0) {
+                audio.src = "";
+                return;
             }
+            if (!playlist[currentIndex]?.previewUrl) return;
+
+            audio.src = playlist[currentIndex].previewUrl;
+            audio.load(); // Important: ensures the audio is fully loaded
         }
 
-        function moveDown(index) {
-            if (index < playlist.length - 1) {
-                socket.emit("moveSong", { from: index, to: index + 1 });
-            }
+        // Play/pause controls
+        function playSong() {
+            if (playlist.length === 0) return;
+            socket.emit("play", audio.currentTime);
+        }
+        function pauseSong() {
+            socket.emit("pause", audio.currentTime);
         }
 
-        function toggleMode() {
-            socket.emit("toggleMode");
-        }
+        // Play next song
+        audio.onended = () => {
+            socket.emit("next");
+        };
 
-        function searchSong() {
-            const query = document.getElementById("searchInput").value;
-            fetch(`https://itunes.apple.com/search?term=${query}&media=music`)
-                .then(res => res.json())
-                .then(data => {
-                    const results = document.getElementById("searchResults");
-                    results.innerHTML = "";
-                    data.results.slice(0, 5).forEach(song => {
-                        const li = document.createElement("li");
-                        li.innerHTML = `
-                            ${song.trackName} - ${song.artistName}
-                            <button onclick='addSong(${JSON.stringify(song)})'>Add</button>
-                        `;
-                        results.appendChild(li);
-                    });
-                });
-        }
-
-        function addSong(song) {
-            if (song.previewUrl) {
-                socket.emit("addSong", song);
-            }
-        }
-
+        // Socket handlers
         socket.on("updatePlaylist", (updated) => {
             playlist = updated;
             renderPlaylist();
-
-            // If currentIndex is invalid (e.g., deleted last song), reset it
             if (currentIndex >= playlist.length) currentIndex = 0;
-
-            // Always reload current song
             loadCurrentSong();
         });
 
@@ -100,12 +80,12 @@
             playlist = state.playlist;
             currentIndex = state.currentIndex;
             renderPlaylist();
-            loadCurrentSong();  // <--- important!
+            loadCurrentSong();
         });
 
         socket.on("play", (time) => {
             audio.currentTime = time;
-            audio.play();
+            audio.play().catch(() => {});
         });
 
         socket.on("pause", (time) => {
@@ -113,49 +93,16 @@
             audio.pause();
         });
 
-        audio.addEventListener("ended", () => {
-            socket.emit("next");
-        });
-
         socket.on("next", (index) => {
+            if (playlist.length === 0) return;
             currentIndex = index;
+
+            // Safety: clamp index
+            if (!playlist[currentIndex]) currentIndex = 0;
+
             loadCurrentSong();
-            audio.play().catch(() => {}); // prevent browser autoplay errors
+            audio.play().catch(() => {});
         });
-
-        function playSong() {
-            socket.emit("play", audio.currentTime);
-        }
-
-        function pauseSong() {
-            socket.emit("pause", audio.currentTime);
-        }
-
-        function playCurrent() {
-            if (playlist.length === 0) return;
-            audio.src = playlist[currentIndex].previewUrl;
-            audio.play();
-        }
-
-        function loadCurrentSong() {
-            if (playlist.length === 0) return;
-
-            const song = playlist[currentIndex];
-            if (!song || !song.previewUrl) return;
-
-            audio.src = song.previewUrl;
-            audio.load(); // Important!
-
-            // Remove previous listeners to avoid multiple triggers
-            audio.onended = null;
-
-            // Attach ended listener AFTER setting src
-            audio.onended = () => {
-                console.log("Song ended detected!");
-                socket.emit("next");
-            };
-        }
-
     </script>
 </body>
 </html>
