@@ -89,16 +89,18 @@
             playlist = updated;
             renderPlaylist();
 
-            if (playlist.length > 0 && !audio.src) {
-                currentIndex = 0;
-                loadCurrentSong();
-            }
+            // If currentIndex is invalid (e.g., deleted last song), reset it
+            if (currentIndex >= playlist.length) currentIndex = 0;
+
+            // Always reload current song
+            loadCurrentSong();
         });
 
         socket.on("syncState", (state) => {
             playlist = state.playlist;
             currentIndex = state.currentIndex;
             renderPlaylist();
+            loadCurrentSong();  // <--- important!
         });
 
         socket.on("play", (time) => {
@@ -109,6 +111,10 @@
         socket.on("pause", (time) => {
             audio.currentTime = time;
             audio.pause();
+        });
+
+        audio.addEventListener("ended", () => {
+            socket.emit("next");
         });
 
         socket.on("next", (index) => {
