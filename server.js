@@ -34,8 +34,8 @@ app.get("/api/search", async (req, res) => {
 
   try {
     console.log(`Searching QQ Music for: "${keyword}"`);
-    const result = await searchWithKeyword(keyword, 0, 10, 1);
-    res.json(result);
+    const songs = await searchWithKeyword(keyword, 0, 10, 1);
+    res.json(songs);
     console.log("QQ returned items count:", songs?.length ?? "no .length");
     console.log("First item (if any):", songs?.[0] ?? "empty");
   } catch (err) {
