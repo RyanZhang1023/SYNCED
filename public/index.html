@@ -60,13 +60,6 @@
                     console.log(data);                                 // ← print the whole thing
                     console.log("JSON string version:", JSON.stringify(data, null, 2));
 
-                    // Try to show the most common paths people expect
-                    console.log("Possible song list locations:");
-                    console.log("data?.data?.song?.list     →", data?.data?.song?.list);
-                    console.log("data?.song?.list           →", data?.song?.list);
-                    console.log("data?.list                 →", data?.list);
-                    console.log("data?.data?.body?.song?.list →", data?.data?.body?.song?.list);
-
                     const results = document.getElementById("searchResults");
                     results.innerHTML = "";
                     const songs = data?.data?.song?.list || data || [];
@@ -74,6 +67,7 @@
 
                         const songName = song.songname || song.name || "Unknown Title";
                         const songMid = song.mid;
+                        console.log(song.mid);
                         const artists = song.singer
                             ? song.singer.map(s => s.name).join(", ")
                             : "Unknown Artist";
