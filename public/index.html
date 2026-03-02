@@ -52,17 +52,40 @@
         // --- Search songs ---
         function searchSong() {
             const query = document.getElementById("searchInput").value;
-            fetch(`https://itunes.apple.com/search?term=${query}&media=music`)
+
+            fetch(`/api/search?keyword=${encodeURIComponent(query)}`)
                 .then(res => res.json())
                 .then(data => {
                     const results = document.getElementById("searchResults");
                     results.innerHTML = "";
-                    data.results.slice(0, 5).forEach(song => {
+
+                    data.forEach(song => {
                         const li = document.createElement("li");
-                        li.innerHTML = `
-                            ${song.trackName} - ${song.artistName}
-                            <button onclick='addSong(${JSON.stringify(song)})'>Add</button>
-                        `;
+
+                        const songObj = {
+                            songmid: song.songmid,
+                            trackName: song.songname,
+                            artistName: song.singer.map(s => s.name).join(", ")
+                        };
+
+                        li.textContent = `${songObj.trackName} - ${songObj.artistName}`;
+
+                        const btn = document.createElement("button");
+                        btn.textContent = "Add";
+
+                        btn.addEventListener("click", async () => {
+                            // Get real playable URL
+                            const res = await fetch(`/api/songurl?songmid=${songObj.songmid}`);
+                            const data = await res.json();
+
+                            if (!data.url) return alert("Cannot play this song");
+
+                            songObj.previewUrl = data.url;
+
+                            socket.emit("addSong", songObj);
+                        });
+
+                        li.appendChild(btn);
                         results.appendChild(li);
                     });
                 });
