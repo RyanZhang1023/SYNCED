@@ -79,12 +79,30 @@
                         const btn = document.createElement("button");
                         btn.textContent = "Add";
 
+                        let playUrl;
+                        fetch(`${API_BASE}/getMusicPlay?songmid=${songMid}`)
+                            .then(response => {
+                                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                                return response.json();
+                            })
+                            .then(json => {
+                                // Adjust this line to match your actual JSON structure
+                                playUrl = json.data;
+
+                            })
+                            .catch(err => {
+                                console.error("Fetch failed for", songMid, err);
+                                if (typeof callback === 'function') {
+                                    callback(null);
+                                }
+                            });
+
                         btn.addEventListener("click", () => {
                             socket.emit("addSong", {
                                 songmid: songMid,
                                 trackName: songName,
                                 artistName: artists,
-                                previewUrl: `${API_BASE}/getMusicPlay?songmid=${songMid}`
+                                previewUrl: playUrl
                             });
                         });
 
