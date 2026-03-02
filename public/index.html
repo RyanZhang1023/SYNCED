@@ -67,10 +67,10 @@
                         console.error("Response is NOT JSON. Raw content above ↑");
                         throw new Error("Not JSON");
                     }
-                    const text = await res.text();
-                    console.log("Raw response body:", text);
+                    //const text = await res.text();
+                    //console.log("Raw response body:", text);
                     // Only now try to parse
-                    const data = JSON.parse(text);
+                    const data = JSON.parse(res.text());
                     const results = document.getElementById("searchResults");
                     results.innerHTML = "";
 
