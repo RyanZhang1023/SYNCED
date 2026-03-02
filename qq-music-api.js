@@ -134,7 +134,7 @@ export let searchWithKeyword = async (
       console.log(err);
     });
 };
-*/
+
 export let searchWithKeyword = async (
     keyword,
     searchType = 0,
@@ -149,14 +149,15 @@ export let searchWithKeyword = async (
             format: "json",
         });
 
-        const url = "https://c.y.qq.com/soso/fcgi-bin/client_search_cp?${params.toString()}";
+        //const url = "https://c.y.qq.com/soso/fcgi-bin/client_search_cp?${params.toString()}";
+        const url = "https://u.y.qq.com/cgi-bin/musicu.fcg";
 
         const response = await fetch(url, {
             credentials: "include",
             headers: {
               "User-Agent":
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0",
-              Accept: "application/json, text/plain, */*",
+              Accept: "application/json, text/plain",
               "Accept-Language":
                 "zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2",
               "Content-Type": "application/json;charset=utf-8",
@@ -177,7 +178,61 @@ export let searchWithKeyword = async (
         return [];
     }
 };
+*/
 
+// qq-music-api.js
+export let searchWithKeyword = async (
+  keyword,
+  searchType = 0,
+  resultNum = 50,
+  pageNum = 1,
+  origin = false
+) => {
+  if (!keyword.trim()) return [];
+
+  const payload = {
+    comm: { ct: 19, cv: 1859, uin: "0" },
+    req: {
+      method: "DoSearchForQQMusicDesktop",
+      module: "music.search.SearchCgiService",
+      param: {
+        grp: 1,
+        num_per_page: resultNum,
+        page_num: pageNum,
+        query: keyword,
+        search_type: searchType,
+      },
+    },
+  };
+
+  try {
+    const res = await fetch("https://u.y.qq.com/cgi-bin/musicu.fcg", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8",
+        Referer: "https://y.qq.com/",
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/129.0.0.0",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    const data = await res.json();
+
+    if (origin) return data;
+
+    // Return the most useful part depending on search type
+    if (searchType === 0) return data?.req?.data?.body?.song?.list || [];
+    if (searchType === 2) return data?.req?.data?.body?.album?.list || [];
+    if (searchType === 3) return data?.req?.data?.body?.songlist?.list || [];
+    return [];
+  } catch (err) {
+    console.error("Search failed:", err);
+    return [];
+  }
+};
 // 获取歌曲歌词
 // API: https://i.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg
 //
