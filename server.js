@@ -47,10 +47,28 @@ app.get("/api/songurl", async (req, res) => {
 
   try {
     const url = await getMusicURL(songmid, "320");
+    console.log(url);
     res.json({ url });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to get URL" });
+  }
+});
+
+app.get("/api/stream", async (req, res) => {
+  const songmid = req.query.songmid;
+  if (!songmid) return res.status(400).end();
+
+  try {
+    const url = await getMusicURL(songmid, "320");
+
+    const response = await fetch(url);
+    res.setHeader("Content-Type", "audio/mpeg");
+    response.body.pipe(res);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).end();
   }
 });
 

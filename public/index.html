@@ -60,29 +60,25 @@
                     results.innerHTML = "";
 
                     data.forEach(song => {
+
+                        const songName = song.songname || song.name || "Unknown Title";
+                        const artists = song.singer
+                            ? song.singer.map(s => s.name).join(", ")
+                            : "Unknown Artist";
+
                         const li = document.createElement("li");
-
-                        const songObj = {
-                            songmid: song.songmid,
-                            trackName: song.songname,
-                            artistName: song.singer.map(s => s.name).join(", ")
-                        };
-
-                        li.textContent = `${songObj.trackName} - ${songObj.artistName}`;
+                        li.textContent = `${songName} - ${artists}`;
 
                         const btn = document.createElement("button");
                         btn.textContent = "Add";
 
-                        btn.addEventListener("click", async () => {
-                            // Get real playable URL
-                            const res = await fetch(`/api/songurl?songmid=${songObj.songmid}`);
-                            const data = await res.json();
-
-                            if (!data.url) return alert("Cannot play this song");
-
-                            songObj.previewUrl = data.url;
-
-                            socket.emit("addSong", songObj);
+                        btn.addEventListener("click", () => {
+                            socket.emit("addSong", {
+                                songmid: song.songmid,
+                                trackName: songName,
+                                artistName: artists,
+                                previewUrl: `/api/stream?songmid=${song.songmid}`
+                            });
                         });
 
                         li.appendChild(btn);
