@@ -51,7 +51,7 @@
         function toggleMode() { socket.emit("toggleMode"); }
 
         // --- Search songs ---
-        async function searchSong() {
+        function searchSong() {
             const query = document.getElementById("searchInput").value;
 
             fetch(`/api/search?keyword=${encodeURIComponent(query)}`)
