@@ -43,8 +43,9 @@ export let getMusicURL = async (songmid, quality = "320", origin = false) => {
   })
     .then((res) => res.json())
     .then((data) => {
+      console.log(data)
       if (origin) return data;
-      else return data.req_1.data.sip[0] + data.req_1.data.midurlinfo[0].purl;
+      else return data.req_0.data.sip[0] + data.req_0.data.midurlinfo[0].purl;
     })
     .catch((err) => {
       console.log(err);
