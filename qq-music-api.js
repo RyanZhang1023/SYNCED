@@ -13,7 +13,7 @@
 // quality: 歌曲品质（字符串），有 m4a、128、320（默认）可选，其中 128、320 为 MP3 格式，默认为 320
 
 export let getMusicURL = async (songmid, quality = "320", origin = false) => {
-  return await fetch("https://u.y.qq.com/cgi-bin/musicu.fcg", {
+  return await fetch("https://u6.y.qq.com/cgi-bin/musics.fcg", {
     headers: {
       accept: "application/json, text/plain, */*",
       "accept-language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
@@ -25,7 +25,7 @@ export let getMusicURL = async (songmid, quality = "320", origin = false) => {
       "sec-fetch-site": "none",
       "sec-fetch-storage-access": "active",
     },
-    referrer: "https://y.qq.com/",
+    referrer: "https://y.qq.com/portal/player.html",
     body: '{"req_1":{"module":"vkey.GetVkeyServer","method":"CgiGetVkey","param":{"filename":["PREFIXSONGMIDSONGMID.SUFFIX"],"guid":"10000","songmid":["SONGMID"],"songtype":[0],"uin":"0","loginflag":1,"platform":"20"}},"loginUin":"0","comm":{"uin":"0","format":"json","ct":24,"cv":0}}'
       .replaceAll("SONGMID", songmid)
       .replaceAll(
