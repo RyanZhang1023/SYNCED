@@ -56,6 +56,24 @@
             fetch(`/api/search?keyword=${encodeURIComponent(query)}`)
                 .then(res => res.json())
                 .then(data => {
+                    console.log("=== RAW SEARCH RESPONSE FROM SERVER ===");
+                    console.log(data);                                 // ← print the whole thing
+                    console.log("JSON string version:", JSON.stringify(data, null, 2));
+
+                    // Try to show the most common paths people expect
+                    console.log("Possible song list locations:");
+                    console.log("data?.data?.song?.list     →", data?.data?.song?.list);
+                    console.log("data?.song?.list           →", data?.song?.list);
+                    console.log("data?.list                 →", data?.list);
+                    console.log("data?.data?.body?.song?.list →", data?.data?.body?.song?.list);
+
+                    const songs = data?.data?.song?.list
+                               || data?.song?.list
+                               || data?.list
+                               || data?.data?.body?.song?.list
+                               || [];
+
+                    console.log(`Found ${songs.length} songs`);
                     const results = document.getElementById("searchResults");
                     results.innerHTML = "";
                     const songs = data?.data?.song?.list || data || [];
