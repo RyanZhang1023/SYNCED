@@ -44,7 +44,11 @@
             loadCurrentSong();
             const overlay = document.getElementById('activation-overlay');
 
-            overlay.classList.add('show');
+            if (!hasUserGestured){
+                overlay.classList.add('show');
+            } else {
+                overlay.classList.remove('show');
+            }
 
             if (isPlaying) {
                 setTimeout(() => {
