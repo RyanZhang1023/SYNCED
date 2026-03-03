@@ -82,7 +82,7 @@ io.on("connection", (socket) => {
     socket.on("deleteSong", (index) => {
         playlist.splice(index, 1);
         // Ensure currentIndex is within bounds
-        if (currentIndex >= playlist.length) currentIndex = playlist.length - 1;
+        if (currentIndex >= playlist.length) currentIndex = Math.max(playlist.length - 1, 0);
         io.emit("updatePlaylist", playlist);
     });
 
