@@ -54,7 +54,7 @@
             if (state.isPlaying) {
                 console.log("sync playing");
                 setTimeout(() => {
-                    audio.currentTime = currentTime;
+                    audio.currentTime = state.currentTime;
                     audio.play().catch(e => {
                         console.warn("Auto-play after sync failed:", e);
                     });
