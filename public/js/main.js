@@ -329,6 +329,7 @@ function handleJoinFromOverlay() {
 // ── Gesture unlock ──────────────────────────────────────
 
 document.addEventListener("DOMContentLoaded", () => {
+  console.log("DOMContentLoaded fired");
   document.getElementById("activation-overlay").classList.add("show");
   initSortable();
 });
