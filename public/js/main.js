@@ -176,7 +176,7 @@ function searchSong() {
   const query = document.getElementById("searchInput").value.trim();
   if (!query) return;
 
-  fetch(`${API_BASE}/search?keyword=${encodeURIComponent(query)}`)
+  fetch(`/api/search?keyword=${encodeURIComponent(query)}`)
     .then(res => res.json())
     .then(data => {
       searchResults.innerHTML = "";
