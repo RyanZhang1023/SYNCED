@@ -6,6 +6,7 @@ let playlist = [];
 let currentIndex = 0;
 let isPlaying = false;
 let hasUserGestured = false;
+let playlistSortable = null;
 
 audio.onended = () => {
   isPlaying = false;
@@ -96,11 +97,6 @@ function renderPlaylist() {
         playlistUl.appendChild(li);
     });
 
-    // ── IMPORTANT: Destroy old instance if exists, then create new one ──
-    if (window.playlistSortable) {
-        window.playlistSortable.destroy();
-    }
-
     window.playlistSortable = new Sortable(playlistUl, {
         animation: 150,
         handle: '.drag-handle',           // must match the icon class
@@ -182,6 +178,30 @@ function loadCurrentSong() {
 }
 
 // ── Controls ────────────────────────────────────────────
+
+function initSortable() {
+  if (playlistSortable) return; // already initialized
+
+  playlistSortable = new Sortable(playlistUl, {
+    animation: 150,
+    handle: '.drag-handle',
+    ghostClass: 'dragging',
+    chosenClass: 'chosen',
+    dragClass: 'dragged',
+    forceFallback: true,           // better mobile/touch support
+    onEnd: (evt) => {
+      const { oldIndex, newIndex } = evt;
+      if (oldIndex === newIndex) return;
+
+      console.log(`Drag ended: ${oldIndex} → ${newIndex}`);
+
+      // Tell server the new order
+      socket.emit("moveSong", { from: oldIndex, to: newIndex });
+    }
+  });
+
+  console.log("Sortable initialized");
+}
 
 function searchSong() {
   const query = document.getElementById("searchInput").value.trim();
@@ -303,4 +323,5 @@ function handleJoinFromOverlay() {
 
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("activation-overlay").classList.add("show");
+  initSortable();
 });
