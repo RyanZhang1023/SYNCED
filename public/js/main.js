@@ -204,7 +204,7 @@ function searchSong() {
       }
 
       songs.forEach(s => {
-        const name = s.songname || song.name || "Unknown";
+        const name = s.title;
         const mid = s.mid;
         const artists = s.singer?.map(a => a.name).join(", ") || "";
 
