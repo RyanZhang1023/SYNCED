@@ -350,11 +350,29 @@ h1 {
 
 /* Responsive */
 @media (max-width: 768px) {
-  .main-content {
-    flex-direction: column;
+  header {
+    flex-wrap: wrap;                  /* allow wrapping if needed */
+    gap: 10px;
+    justify-content: space-between;
   }
-  .users-panel {
-    width: 100%;
-    max-height: 160px;
+
+  h1 {
+    font-size: 1.6rem;                /* quite small title */
+    margin: 0;
+  }
+
+  .search-bar {
+    flex: 1 1 auto;
+    max-width: 65%;                   /* ← key: limit search bar width */
+  }
+
+  .search-bar input {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+  }
+
+  .search-bar button {
+    padding: 8px 12px;
+    min-width: 44px;                  /* smaller button */
   }
 }
