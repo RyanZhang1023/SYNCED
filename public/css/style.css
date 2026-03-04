@@ -355,6 +355,26 @@ h1 {
     gap: 16px;
   }
 
+  h1 {
+    font-size: 1.6rem;                /* quite small title */
+    margin: 0;
+  }
+
+  .search-bar {
+    flex: 1 1 auto;
+    max-width: 65%;                   /* ← key: limit search bar width */
+  }
+
+  .search-bar input {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+  }
+
+  .search-bar button {
+    padding: 8px 12px;
+    min-width: 44px;                  /* smaller button */
+  }
+
   .users-panel {
     width: 100% !important;
     max-height: 140px;               /* limit height so it doesn't eat too much space */
