@@ -271,6 +271,21 @@ h1 {
   color: #b3b3b3;
 }
 
+.sortable-ghost {
+  opacity: 0.4;
+  background: #444 !important;
+}
+
+.sortable-chosen {
+  background: #333 !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+}
+
+.dragging {
+  transform: scale(1.03);
+  transition: transform 0.1s;
+}
+
 /* Activation overlay */
 .activation-overlay {
   display: none;

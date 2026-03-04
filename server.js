@@ -100,18 +100,20 @@ io.on("connection", (socket) => {
   });
 
   socket.on("moveSong", ({ from, to }) => {
-    const f = Number(from);
-    const t = Number(to);
-    if (
-      !Number.isInteger(f) || !Number.isInteger(t) ||
-      f < 0 || f >= playlist.length ||
-      t < 0 || t >= playlist.length
-    ) return;
+      const f = Number(from);
+      const t = Number(to);
+      if (isNaN(f) || isNaN(t) || f < 0 || t < 0 || f >= playlist.length || t >= playlist.length) {
+        console.log("Invalid move indices", from, to);
+        return;
+      }
 
-    const [moved] = playlist.splice(f, 1);
-    playlist.splice(t, 0, moved);
-    io.emit("updatePlaylist", playlist);
-  });
+      const [moved] = playlist.splice(f, 1);
+      playlist.splice(t, 0, moved);
+
+      console.log(`Server moved ${f} → ${t}`); // debug
+
+      io.emit("updatePlaylist", playlist);  // ← must send full array
+    });
 
   // Playback
   socket.on("play", (time) => {

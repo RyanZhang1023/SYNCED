@@ -104,6 +104,9 @@ function renderPlaylist() {
         chosenClass: 'chosen',
         dragClass: 'dragged',
         forceFallback: true,              // helps on mobile/touch
+        fallbackTolerance: 3,             // helps with small movements not triggering
+        fallbackOnBody: true,             // appends ghost to body (avoids clipping)
+        supportPointer: true,
         onEnd: (evt) => {
             const { oldIndex, newIndex } = evt;
             if (oldIndex === newIndex) return;
