@@ -17,6 +17,8 @@
       <div class="search-bar">
         <input type="text" id="searchInput" placeholder="Search songs..." />
         <button onclick="searchSong()"><i class="fas fa-search"></i></button>
+        <!-- Search results overlay -->
+        <div id="searchResults" class="search-results"></div>
       </div>
     </header>
 
@@ -34,9 +36,6 @@
         <div class="playlist-header">
           <h2>Playlist</h2>
         </div>
-
-        <!-- Search results overlay -->
-        <div id="searchResults" class="search-results"></div>
 
         <ul id="playlist" class="playlist sortable"></ul>
       </section>
