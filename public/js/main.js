@@ -108,13 +108,17 @@ function renderPlaylist() {
         fallbackOnBody: true,             // appends ghost to body (avoids clipping)
         supportPointer: true,
         onEnd: (evt) => {
-            const { oldIndex, newIndex } = evt;
+            const oldIndex = evt.oldIndex;
+            const newIndex = evt.newIndex;
             if (oldIndex === newIndex) return;
 
             console.log(`Moved from ${oldIndex} → ${newIndex}`); // debug
 
             socket.emit("moveSong", { from: oldIndex, to: newIndex });
         }
+        onStart: () => console.log("Drag started"),
+        onMove: () => console.log("onMove called"),
+        onChange: () => console.log("onChange called")
     });
 }
 
