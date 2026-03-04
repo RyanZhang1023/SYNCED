@@ -96,27 +96,6 @@ function renderPlaylist() {
         if (i === currentIndex) li.classList.add("playing");
         playlistUl.appendChild(li);
     });
-
-    window.playlistSortable = new Sortable(playlistUl, {
-        animation: 150,
-        handle: '.drag-handle',           // must match the icon class
-        ghostClass: 'dragging',
-        chosenClass: 'chosen',
-        dragClass: 'dragged',
-        forceFallback: true,              // helps on mobile/touch
-        fallbackTolerance: 3,             // helps with small movements not triggering
-        fallbackOnBody: true,             // appends ghost to body (avoids clipping)
-        supportPointer: true,
-        onEnd: (evt) => {
-            const oldIndex = evt.oldIndex;
-            const newIndex = evt.newIndex;
-            if (oldIndex === newIndex) return;
-
-            console.log(`Moved from ${oldIndex} → ${newIndex}`); // debug
-
-            socket.emit("moveSong", { from: oldIndex, to: newIndex });
-        }
-    });
 }
 
 function renderUsers(users) {
@@ -194,10 +173,12 @@ function initSortable() {
     dragClass: 'dragged',
     forceFallback: true,           // better mobile/touch support
     onEnd: (evt) => {
-      const { oldIndex, newIndex } = evt;
+      const oldIndex = evt.oldIndex;
+      const newIndex = evt.newIndex;
+      console.log(`Drag ended: ${oldIndex} → ${newIndex}`);
       if (oldIndex === newIndex) return;
 
-      console.log(`Drag ended: ${oldIndex} → ${newIndex}`);
+
 
       // Tell server the new order
       socket.emit("moveSong", { from: oldIndex, to: newIndex });
