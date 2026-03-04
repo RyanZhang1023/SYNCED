@@ -211,7 +211,7 @@ function searchSong() {
         const li = document.createElement("li");
         li.innerHTML = `
           <span>${name} – ${artists}</span>
-          <button onclick="addSongFromSearch('${mid}', '${name}', '${artists}')">Add</button>
+          <button onclick="addSongFromSearch('${mid}', '${name.replace(/'/g,"\\'")}', '${artists.replace(/'/g,"\\'")}')">Add</button>
         `;
         searchResults.appendChild(li);
       });
